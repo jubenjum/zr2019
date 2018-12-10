@@ -1,0 +1,42 @@
+########## BASELINE FOR ZEROSPEECH 2019#####
+
+This baseline works as two independant systems.
+
+First it trains BEER (https://github.com/beer-asr/beer) an acoustic unit discovery algorithm. From a dataset of audio files, it learns an unsupervised set of acoustic units.
+These phones are then fed into OSSIAN (https://github.com/CSTR-Edinburgh/Ossian), a text-to-speech pipeline. From sentences, written with units from BEER, OSSIAN learns to synthesize speech. 
+
+##########HOW TO TRAIN THE BASELINE AND BUILD A SUBMISSION##########
+
+# All dependancies and systems are pre installed in the docker. You can check what was installed by reading set up scripts at: 
+
+vim $HOME/baseline/set_up_baseline.sh
+vim $HOME/eval/set_up_eval.sh
+
+# Train on toy dataset:
+cd $HOME/baseline/training
+bash train_baseline.sh /home/zs2019/baseline /home/zs2019/databases/english_small/ 1
+# Train on full dataset
+bash train_baseline.sh /home/zs2019/baseline /home/zs2019/databases/english/ 1
+
+# Decode sentences and make a submission from the baseline
+bash decode_and_make_submission.sh /home/zs2019 submission
+
+
+##########HOW TO EVALUATE A SUBMISSION##############################
+
+# A submission for the english database should be structured like this :
+
+$HOME/submission:
+	metadata
+	code/*
+	english/test/*.txt and *.wav
+
+# You need to validate your submission before evaluating it
+cd $HOME/tools/
+bash validate.sh $HOME/baseline/training/submission/zip english
+
+# You can then run the evaluation script (note that the evaluation script will also do the validation by default)
+cd $HOME/tools/eval
+bash evaluate_submission.sh  /home/zs2019/ /home/zs2019/submission
+
+
